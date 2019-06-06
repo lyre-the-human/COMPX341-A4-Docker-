@@ -25,19 +25,25 @@ def get_hit_count():
 def isPrime(number):
     try:
         num = int(number)
-        #TODO replace with redis list
-        if(cache.get(str(num)) != None):
-            #return yes, because only primes are stored here
-            return (str(num) +" is prime")
 
+        #if number is 0, 1 or negative
         if(num < 2):
             return(str(num)+" is not prime.")
 
+        #if number already exists in the list
+        listLength = cache.llen('listPrimes')
+        if listLength != 0:
+            for x in range (0,listLength):
+                element = cache.lindex('listPrimes', x)
+                element = str(element, 'utf-8')
+                if element == str(num):
+                    return(str(num)+" is prime.")
+        #else
         for i in range(2,math.floor(num/2)): #check for factors
             if (num % i) == 0:
                 return(str(num)+" is not prime.")
-       #TODO replace with redis list
-        cache.set(str(num), str(num))
+        #store to redis if prime
+        cache.rpush('listPrimes', str(num)) 
         return(str(num)+" is prime.")
     except Exception as e:
         print(e)
@@ -49,9 +55,15 @@ def isPrime(number):
 @app.route('/primesStored/')
 def primesStored():
     #TODO get redis list and store each element into test list
+    listLength = cache.llen('listPrimes')
+    if listLength == 0:
+        return("No primes stored yet")
     testList = []
-    testList.append(1)
-    testList.append(2)
+    for x in range (0,listLength):
+        element = cache.lindex('listPrimes', x)
+        element = str(element, 'utf-8')
+        testList.append(element)
+
     string = ', '.join(str(e) for e in testList)
     return(string) 
 #----------------------------------------------------------------------------    
