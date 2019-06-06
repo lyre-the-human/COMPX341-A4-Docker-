@@ -22,23 +22,29 @@ def get_hit_count():
 def isPrime(number):
     try:
         num = int(number)
+        if(cache.get(str(num)) != None):
+            #return yes, because only primes are stored here
+            return (str(num) +" is prime")
+
         if(num < 2):
             return(str(num)+" is not prime.")
 
         for i in range(2,math.floor(num/2)): #check for factors
             if (num % i) == 0:
                 return(str(num)+" is not prime.")
-        #check if number was stored in redis previousl
-        if cache.get(str(num)) == None:
-            cache.set(str(num), str(num))
-            print(str(num) + "WAS STORED BY REDIS")
+       
+        cache.set(str(num), str(num))
         return(str(num)+" is prime.")
     except Exception as e:
         print(e)
         traceback.print_stack(e)
         return('Please provide an integer')
 
-       
+@app.route('/primesStored/')
+def primesStored():
+    testList = [1,2,3,4]
+    string = ''.join(testList)
+    return(string) 
     
 @app.route('/')
 def hello():
