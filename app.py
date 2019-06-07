@@ -60,9 +60,9 @@ def isPrime(number):
             return(str(num)+" is not prime.")
 
     except Exception as e:
-        print(e)
-        traceback.print_stack(e)
-        return('Please provide an integer')
+        #print(e)
+        #traceback.print_stack(e)
+        return("Please provide an integer")
 
 #----------------------------------------------------------------------------
 
