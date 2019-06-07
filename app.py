@@ -24,8 +24,8 @@ def get_hit_count():
 @app.route('/isPrime/<number>')
 def isPrime(number):
     try:
+          
         num = int(number)
-
         #if number is 0, 1 or negative
         if(num < 2):
             return(str(num)+" is not prime.")
@@ -38,13 +38,27 @@ def isPrime(number):
                 element = str(element, 'utf-8')
                 if element == str(num):
                     return(str(num)+" is prime.")
+
+	#if num == 2147483647:
+          #  cache.rpush('listPrimes', str(num)) 
+          #  return(str(num)+" is prime.")
+
         #else
-        for i in range(2,math.floor(num/2)): #check for factors
-            if (num % i) == 0:
-                return(str(num)+" is not prime.")
+        if num % 2 != 0 and num % 3 != 0 and num % 5 != 0 and num % 7 != 0 and num > 7 :
+            for i in range(7,math.floor(num/4)): #check for factors but only those which are odd
+                oddNum = i*2+1
+                if (num % oddNum) == 0:
+                    return(str(num)+" is not prime.")
         #store to redis if prime
-        cache.rpush('listPrimes', str(num)) 
-        return(str(num)+" is prime.")
+            cache.rpush('listPrimes', str(num)) 
+            return(str(num)+" is prime.")
+
+        else:
+            if num== 2 or num == 3 or num == 5 or num == 7:
+                cache.rpush('listPrimes', str(num)) 
+                return(str(num)+" is prime.")
+            return(str(num)+" is not prime.")
+
     except Exception as e:
         print(e)
         traceback.print_stack(e)
